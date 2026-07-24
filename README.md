@@ -1,7 +1,6 @@
+JSON to proxy URL API
 
-#JSON to proxy URL API
-
-##POST xray или sing-box конфиг, получи vless/vmess/trojan/ss/hysteria2/tuic/anytls URLs.
+POST xray или sing-box конфиг, получи vless/vmess/trojan/ss/hysteria2/tuic/anytls URLs.
 Endpoint
 POST /json
 тело - любой валидный JSON (см. ниже)
@@ -28,21 +27,21 @@ curl -X POST https://p.kfwl.lol/json -H 'Content-Type: application/json' -d '{
   "streamSettings":{"network":"tcp","security":"tls",
     "tlsSettings":{"serverName":"test.com"}}}'
 
-##Пример - sing-box outbound
+Пример - sing-box outbound
 
 curl -X POST https://p.kfwl.lol/json -H 'Content-Type: application/json' -d '{
   "type":"hysteria2","tag":"FR","server":"fr.example.com","server_port":443,
   "password":"pw","obfs":{"type":"salamander","password":"salt"},
   "tls":{"enabled":true,"server_name":"fr.example.com","alpn":["h3"]}}'
 
-##Пример - массив, JSON response
+Пример - массив, JSON response
 
 curl -X POST https://p.kfwl.lol/json \
   -H 'Content-Type: application/json' -H 'Accept: application/json' \
   --data-binary @configs.json
 # -> {"count":21,"links":["vless://...","hysteria2://...",...]}
 
-##Ошибки
+Ошибки
 400
 невалидный JSON
 405
