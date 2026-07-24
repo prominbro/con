@@ -1,30 +1,55 @@
-# vpnproxy
 
-Self-hosted subscription proxy & converter для VPN-клиентов.
+#JSON to proxy URL API
 
-## Что делает
+##POST xray или sing-box конфиг, получи vless/vmess/trojan/ss/hysteria2/tuic/anytls URLs.
+Endpoint
+POST /json
+тело - любой валидный JSON (см. ниже)
+Content-Type
+application/json
+Accept
+text/plain (по умолч.) или application/json
+Что можно прислать
 
-- Проксирует подписки (`/vpn/<name>/<token>`) с ретраями и таймаутами.
-- Разбирает xray / sing-box / clash JSON и base64 подписки.
-- Конвертит outbound-конфиги обратно в ссылки `vless://`, `vmess://`, `trojan://`, `ss://`, `hy2://`, `tuic://`, `anytls://`.
-- Поддерживает транспорты: tcp, ws, grpc, http, xhttp, httpupgrade; security: tls, reality, none.
-- REST API: `POST /json` — конвертер JSON → массив ссылок; `GET /docs` — HTML-документация.
-- Форматированные страницы подписок (`/<name>`) с QR-кодами и списком нод.
+    Xray full-config (dict с outbounds) или массив таких
+    Sing-box full-config или массив таких
+    Один outbound: xray (с protocol) или sing-box (с type)
+    Массив outbounds (смешивать форматы можно)
 
-## Статус
+##Поддерживаемые протоколы
 
-Репозиторий публичный и создан **исключительно для ознакомления**.
-Исходный код здесь **не публикуется** — только описание проекта и лицензия.
+vless, vmess, trojan, shadowsocks, hysteria2, tuic, anytls. Транспорты: tcp, ws, httpupgrade, grpc, http/h2, xhttp (с полным extra).
+Пример - xray outbound
 
-## Стек
+curl -X POST https://p.kfwl.lol/json -H 'Content-Type: application/json' -d '{
+  "protocol":"vless","tag":"test",
+  "settings":{"vnext":[{"address":"1.2.3.4","port":443,
+    "users":[{"id":"UUID","encryption":"none","flow":""}]}]},
+  "streamSettings":{"network":"tcp","security":"tls",
+    "tlsSettings":{"serverName":"test.com"}}}'
 
-Python 3.11 · aiohttp · nginx · systemd · Debian 12.
+##Пример - sing-box outbound
 
-## Демо
+curl -X POST https://p.kfwl.lol/json -H 'Content-Type: application/json' -d '{
+  "type":"hysteria2","tag":"FR","server":"fr.example.com","server_port":443,
+  "password":"pw","obfs":{"type":"salamander","password":"salt"},
+  "tls":{"enabled":true,"server_name":"fr.example.com","alpn":["h3"]}}'
 
-- `p.kfwl.lol/docs` — документация API.
-- `p.kfwl.lol/json` — endpoint конвертера.
+##Пример - массив, JSON response
 
-## Автор
+curl -X POST https://p.kfwl.lol/json \
+  -H 'Content-Type: application/json' -H 'Accept: application/json' \
+  --data-binary @configs.json
+# -> {"count":21,"links":["vless://...","hysteria2://...",...]}
 
-[@кфвл](https://kfwlrus.t.me)
+##Ошибки
+400
+невалидный JSON
+405
+метод не POST
+422
+в теле нет поддерживаемых proxy
+500
+внутренняя ошибка
+
+Существующие endpoint'ы (/?=url/<sub>, /vpn/<name>/<token>) работают как раньше.
