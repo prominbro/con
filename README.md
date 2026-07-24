@@ -15,7 +15,7 @@ text/plain (по умолч.) или application/json
     Один outbound: xray (с protocol) или sing-box (с type)
     Массив outbounds (смешивать форматы можно)
 
-##Поддерживаемые протоколы
+Поддерживаемые протоколы
 
 vless, vmess, trojan, shadowsocks, hysteria2, tuic, anytls. Транспорты: tcp, ws, httpupgrade, grpc, http/h2, xhttp (с полным extra).
 Пример - xray outbound
